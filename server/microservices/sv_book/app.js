@@ -8,18 +8,21 @@ var PORT = 4000;
 var books = [
     {
         id: 1,
-        title: "The first GraphQL"
+        title: "The first GraphQL",
+        owner: 1
     },
     {
         id: 2,
-        title: "The second world"
+        title: "The second world",
+        owner: 1
     },
     {
         id: 3,
-        title: "The last of us"
+        title: "The last of us",
+        owner: 3
     }
 ];
-var typeDefs = gql(__makeTemplateObject(["\n  type Book @key(fields: \"id\") {\n    id: ID!\n    title: String\n  }\n\n  type Query {\n    allBooks: [Book]\n  }\n"], ["\n  type Book @key(fields: \"id\") {\n    id: ID!\n    title: String\n  }\n\n  type Query {\n    allBooks: [Book]\n  }\n"]));
+var typeDefs = gql(__makeTemplateObject(["\n  type Book @key(fields: \"id\") {\n    id: ID!\n    title: String\n    owner: User\n  }\n\n  extend type User @key(fields: \"id\") {\n    id: ID! @external\n  }\n\n  type Query {\n    allBooks: [Book]\n  }\n"], ["\n  type Book @key(fields: \"id\") {\n    id: ID!\n    title: String\n    owner: User\n  }\n\n  extend type User @key(fields: \"id\") {\n    id: ID! @external\n  }\n\n  type Query {\n    allBooks: [Book]\n  }\n"]));
 var resolvers = {
     Query: {
         allBooks: function () { return books; }
@@ -27,6 +30,10 @@ var resolvers = {
     Book: {
         __resolverReference: function (book) {
             return books[book.id];
+        },
+        owner: function (book) {
+            console.log(book);
+            return { __typename: "User", id: book.owner };
         }
     }
 };

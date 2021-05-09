@@ -26,7 +26,7 @@ var resolvers = {
     },
     User: {
         __resolveReference: function (user) {
-            return users[user.id];
+            return users.find(function (val) { return user.id == val.id; });
         }
     }
 };

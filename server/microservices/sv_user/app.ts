@@ -35,7 +35,7 @@ const resolvers = {
   },
   User: {
     __resolveReference: (user) => {
-      return users[user.id];
+      return users.find((val) => user.id == val.id);
     },
   },
 };

@@ -7,14 +7,17 @@ const books = [
   {
     id: 1,
     title: "The first GraphQL",
+    owner: 1,
   },
   {
     id: 2,
     title: "The second world",
+    owner: 1,
   },
   {
     id: 3,
     title: "The last of us",
+    owner: 3,
   }
 ];
 
@@ -22,6 +25,11 @@ const typeDefs = gql`
   type Book @key(fields: "id") {
     id: ID!
     title: String
+    owner: User
+  }
+
+  extend type User @key(fields: "id") {
+    id: ID! @external
   }
 
   type Query {
@@ -36,6 +44,10 @@ const resolvers = {
   Book: {
     __resolverReference: (book) => {
       return books[book.id];
+    },
+    owner: (book) => {
+      console.log(book)
+      return { __typename: "User", id: book.owner }
     },
   },
 };
