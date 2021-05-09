@@ -25,10 +25,26 @@ var reviews = [
         comment: "nice nice book!!!"
     }
 ];
-var typeDefs = gql(__makeTemplateObject(["\n  type Review @key(fields: \"id\") {\n    id: ID!\n    #book: Book\n    #user: User\n  }\n\n  type Query {\n    allReviews: [Review]\n  }\n"], ["\n  type Review @key(fields: \"id\") {\n    id: ID!\n    #book: Book\n    #user: User\n  }\n\n  type Query {\n    allReviews: [Review]\n  }\n"]));
+var typeDefs = gql(__makeTemplateObject(["\n  type Review @key(fields: \"id\") {\n    id: ID!\n    comment: String\n    book: Book\n    user: User\n  }\n\n  extend type User @key(fields: \"id\") {\n    id: ID! @external\n  }\n\n  extend type Book @key(fields: \"id\") {\n    id: ID! @external\n  }\n\n  type Query {\n    allReviews: [Review]\n  }\n"], ["\n  type Review @key(fields: \"id\") {\n    id: ID!\n    comment: String\n    book: Book\n    user: User\n  }\n\n  extend type User @key(fields: \"id\") {\n    id: ID! @external\n  }\n\n  extend type Book @key(fields: \"id\") {\n    id: ID! @external\n  }\n\n  type Query {\n    allReviews: [Review]\n  }\n"]));
 var resolvers = {
     Query: {
         allReviews: function () { return reviews; }
+    },
+    Review: {
+        __resolveReference: function (review) {
+            return reviews.find(function (val) { review.id == val.id; });
+        },
+        book: function (review) {
+            console.log(review);
+            return {
+                __typename: "Book", id: review.book
+            };
+        },
+        user: function (review) {
+            return {
+                __typename: "User", id: review.user
+            };
+        }
     }
 };
 var server = new ApolloServer({

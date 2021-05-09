@@ -27,8 +27,17 @@ const reviews = [
 const typeDefs = gql`
   type Review @key(fields: "id") {
     id: ID!
-    #book: Book
-    #user: User
+    comment: String
+    book: Book
+    user: User
+  }
+
+  extend type User @key(fields: "id") {
+    id: ID! @external
+  }
+
+  extend type Book @key(fields: "id") {
+    id: ID! @external
   }
 
   type Query {
@@ -39,6 +48,22 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     allReviews: () => reviews,
+  },
+  Review: {
+    __resolveReference: (review) => {
+      return reviews.find((val) => { review.id == val.id });
+    },
+    book: (review) => {
+      console.log(review);
+      return {
+        __typename: "Book", id: review.book,
+      };
+    },
+    user: (review) => {
+      return {
+        __typename: "User", id: review.user,
+      };
+    },
   },
 };
 
