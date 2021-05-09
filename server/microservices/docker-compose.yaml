@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  gateway:
+    image: krismt/nodemon
+    container_name: 'GraphQL_GW'
+    ports:
+      - 4000:4000
+    volumes:
+      - ./gateway:/data
+
+  sv_user:
+    image: krismt/nodemon
+    container_name: 'sv_user'
+    ports:
+      - 4001:4000
+    volumes:
+      - ./sv_user:/data
+
+  sv_book:
+    image: krismt/nodemon
+    container_name: 'sv_book'
+    ports:
+      - 4002:4000
+    volumes:
+      - ./sv_book:/data
+
+  sv_review:
+    image: krismt/nodemon
+    container_name: 'sv_review'
+    ports:
+      - 4003:4000
+    volumes:
+      - ./sv_review:/data

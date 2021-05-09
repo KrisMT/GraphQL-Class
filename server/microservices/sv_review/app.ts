@@ -1,4 +1,5 @@
 const { ApolloServer, gql } = require('apollo-server');
+const { buildFederatedSchema } = require('@apollo/federation');
 
 const PORT = 4000;
 
@@ -24,7 +25,7 @@ const reviews = [
 ];
 
 const typeDefs = gql`
-  type Review {
+  type Review @key(fields: "id") {
     id: ID!
     #book: Book
     #user: User
@@ -41,7 +42,9 @@ const resolvers = {
   },
 };
 
-const server = new ApolloServer({typeDefs, resolvers});
+const server = new ApolloServer({
+  schema: buildFederatedSchema([{typeDefs, resolvers}]),
+});
 
 server.listen({port: PORT}).then(({url}) => {
   console.log(`Review Service ready at ${url}`);
