@@ -42,12 +42,12 @@ const resolvers = {
     allBooks: () => books,
   },
   Book: {
-    __resolverReference: (book) => {
-      return books[book.id];
+    __resolveReference: (book) => {
+      console.log(book);
+      return books.find(( val ) => book.id == val.id);
     },
     owner: (book) => {
-      console.log(book)
-      return { __typename: "User", id: book.owner }
+      return { __typename: "User", id: book.owner };
     },
   },
 };

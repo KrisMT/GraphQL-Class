@@ -28,11 +28,11 @@ var resolvers = {
         allBooks: function () { return books; }
     },
     Book: {
-        __resolverReference: function (book) {
-            return books[book.id];
+        __resolveReference: function (book) {
+            console.log(book);
+            return books.find(function (val) { return book.id == val.id; });
         },
         owner: function (book) {
-            console.log(book);
             return { __typename: "User", id: book.owner };
         }
     }
