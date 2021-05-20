@@ -1,14 +1,9 @@
 const { ApolloServer } = require('apollo-server');
 const { ApolloGateway, RemoteGraphQLDataSource } = require('@apollo/gateway');
 
-
 class AuthenticatedDataSource extends RemoteGraphQLDataSource {
   willSendRequest({ request, context }) {
-    // Pass the user's id from the context to underlying services
-    // as a header called `user-id`
-    //console.log(`Context: ${JSON.stringify(context)}`);
-    //request.http.headers.set('user-id', 'KrisMT');
-    //console.log(`req: ${JSON.stringify(request)}`);
+    request.http.headers.set('users', JSON.stringify(context.token));
   }
 }
 

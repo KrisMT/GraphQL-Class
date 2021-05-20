@@ -55,6 +55,11 @@ const resolvers = {
 
 const server = new ApolloServer({
   schema: buildFederatedSchema([{ typeDefs, resolvers }]),
+  context: ({ req }) => {
+    const user = req.headers.users ? req.headers.users : null;
+    if(user) console.log(`User Service: ${user}`);
+    return { user };
+  }
 });
 
 server.listen({port: PORT}).then( function({url}) {
