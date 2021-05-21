@@ -13,6 +13,9 @@
   "dependencies": {
     "@apollo/gateway": "^0.28.0",
     "apollo-server": "^2.24.0",
+    "apollo-server-express": "^2.24.1",
+    "express": "^4.17.1",
+    "express-jwt": "^6.0.0",
     "graphql": "^15.5.0"
   },
   "devDependencies": {

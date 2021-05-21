@@ -1,11 +1,24 @@
-const { ApolloServer } = require('apollo-server');
+const { ApolloServer } = require('apollo-server-express');
 const { ApolloGateway, RemoteGraphQLDataSource } = require('@apollo/gateway');
+const express = require("express");
+const expressJWT = require("express-jwt");
 
 class AuthenticatedDataSource extends RemoteGraphQLDataSource {
   willSendRequest({ request, context }) {
-    request.http.headers.set('users', JSON.stringify(context.token));
+    request.http.headers.set('users', JSON.stringify(context.user));
   }
 }
+
+const port = 4000;
+const app = express();
+app.use(
+  // { "Authorization": "Bearer <jwt token>" }
+  expressJWT({
+    secret: "supersecret", //secret
+    algorithms: ["HS256"],
+    credentialsRequired: false
+  })
+);
 
 const gateway = new ApolloGateway({
   serviceList: [
@@ -26,18 +39,16 @@ const server = new ApolloServer({
   // Disable subscriptions (not currently supported with ApolloGateway)
   subscriptions: false,
 
-
   context: ({ req }) => {
     // Get the user token from the headers
-    const token = req.headers.authorization || '';
-    // Try to retrieve a user with the token
-    //const userId = getUserId(token);
-    // Add the user ID to the context
-    return { token };
+    const user = req.user || null;
+    return { user };
   },
 });
 
-server.listen().then(({ url }) => {
-  console.log(`🚀 Server ready at ${url}`);
+server.applyMiddleware({ app });
+
+app.listen({ port }, () => {
+  console.log(`🚀 Server ready at http://localhost:${port}${server.graphqlPath}`);
 });
 

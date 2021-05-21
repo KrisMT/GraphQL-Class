@@ -1,20 +1,33 @@
 const { ApolloServer, gql } = require('apollo-server');
 const { buildFederatedSchema } = require('@apollo/federation');
+const jwt = require("jsonwebtoken");
 
 const PORT = 4000;
 
 const users = [
   {
-    id: 1,
+    id: "1",
     username: 'Test1',
+    email: "alice@email.com",
+    password: "pAsSWoRd!",
+    roles: ["admin"],
+    permissions: ["read:any_account", "read:own_account"]
   },
   {
-    id: 2,
+    id: "2",
     username: 'Test2',
+    email: "bob@email.com",
+    password: "pAsSWoRd!",
+    roles: ["subscriber"],
+    permissions: ["read:own_account"]
   },
   {
-    id: 3,
+    id: "3",
     username: 'Test3',
+    email: "char@email.com",
+    password: "pAsSWoRd!",
+    roles: ["subscriber"],
+    permissions: ["read:own_account"]
   }
 ];
 const typeDefs = gql`
@@ -29,7 +42,7 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    login(username: String, password: String): String
+    login(email: String, password: String): String
   }
 `;
 
@@ -40,9 +53,17 @@ const resolvers = {
     },
   },
   Mutation: {
-    login(parent, args, context, info) {
+    login(parent, { email, password }, context, info) {
       console.log(`Token: ${JSON.stringify(context)}`);
-      return `Username: ${args.username}, Password: ${args.password}`;
+
+      const { id, permissions, roles } = users.find(
+        user => user.email === email && user.password
+      );
+      return jwt.sign(
+        { "http://localhost:4000/graphql": { roles, permissions } },
+        "supersecret",
+        { algorithm: "HS256", subject: id, expiresIn: "1d" }
+      );
     },
   },
   User: {

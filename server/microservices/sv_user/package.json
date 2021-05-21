@@ -13,7 +13,8 @@
   "dependencies": {
     "@apollo/federation": "^0.24.0",
     "apollo-server": "^2.24.0",
-    "graphql": "^15.5.0"
+    "graphql": "^15.5.0",
+    "jsonwebtoken": "^8.5.1"
   },
   "devDependencies": {
     "@types/node": "^15.0.2"
