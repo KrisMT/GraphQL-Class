@@ -57,7 +57,7 @@ const resolvers = {
       console.log(`Token: ${JSON.stringify(context)}`);
 
       const { id, permissions, roles } = users.find(
-        user => user.email === email && user.password
+        user => user.email === email && user.password === password
       );
       return jwt.sign(
         { "http://localhost:4000/graphql": { roles, permissions } },
