@@ -3,6 +3,8 @@ const { ApolloGateway, RemoteGraphQLDataSource } = require('@apollo/gateway');
 const express = require("express");
 const expressJWT = require("express-jwt");
 
+const start = async () => {
+
 class AuthenticatedDataSource extends RemoteGraphQLDataSource {
   willSendRequest({ request, context }) {
     request.http.headers.set('users', JSON.stringify(context.user));
@@ -52,3 +54,7 @@ app.listen({ port }, () => {
   console.log(`🚀 Server ready at http://localhost:${port}${server.graphqlPath}`);
 });
 
+}
+
+
+start();
