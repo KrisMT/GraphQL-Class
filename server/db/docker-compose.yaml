@@ -10,6 +10,7 @@ services:
       POSTGRES_PASSWORD: example
     volumes:
       - ./001-init-user-db.sh:/docker-entrypoint-initdb.d/001-init-user-db.sh
+      - ./postgres-data:/var/lib/postgresql/data
 
   pgadmin:
     image: dpage/pgadmin4
@@ -19,3 +20,12 @@ services:
     environment:
       PGADMIN_DEFAULT_PASSWORD: example
       PGADMIN_DEFAULT_EMAIL: user@domain.com
+
+  backend:
+    image: krismt/nodemon
+    volumes:
+      - ./backend:/data
+    ports:
+      - 4000:4000
+
+
