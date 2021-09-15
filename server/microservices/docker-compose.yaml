@@ -39,7 +39,9 @@ services:
     environment:
       POSTGRES_PASSWORD: example
     volumes:
+      - ./001-init-user-db.sh:/docker-entrypoint-initdb.d/001-init-user-db.sh
       - ./postgres-data:/var/lib/postgresql/data
+
   pgadmin:
     image: dpage/pgadmin4
     restart: always

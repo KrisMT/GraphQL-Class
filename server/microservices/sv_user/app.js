@@ -1,9 +1,10 @@
 const { ApolloServer, gql } = require('apollo-server');
 const { buildFederatedSchema } = require('@apollo/federation');
 const jwt = require("jsonwebtoken");
+const { Pool } = require('pg');
 
 const PORT = 4000;
-
+/*
 const users = [
   {
     id: "1",
@@ -30,6 +31,7 @@ const users = [
     permissions: ["read:own_account"]
   }
 ];
+*/
 const typeDefs = gql`
   type User @key(fields: "id") {
     id: ID!
@@ -48,41 +50,73 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    allUser(){ 
-      return users
+    allUser: async (parent, args, { db }, info) => { 
+      const res = await db.query('SELECT id, username FROM users.users;');
+      return res.rows;
     },
   },
   Mutation: {
-    login(parent, { email, password }, context, info) {
-      console.log(`Token: ${JSON.stringify(context)}`);
+    login: async (parent, { email, password }, { db }, info) => {
+      //console.log(`Token: ${JSON.stringify(context)}`);
+      
+      //const { id, permissions, roles } = users.find(
+      //  user => user.email === email && user.password === password
+      //);
+      const values = [email, password];
+  
+      const query = {
+        text: 'SELECT id, roles, permissions FROM users.users WHERE email = $1 AND password = $2',
+        values: values,
+      };
 
-      const { id, permissions, roles } = users.find(
-        user => user.email === email && user.password === password
-      );
+      const res = await db.query(query);
+      const { id, permissions, roles } = res.rows[0];
+
       return jwt.sign(
         { "http://localhost:4000/graphql": { roles, permissions } },
         "supersecret",
         { algorithm: "HS256", subject: id, expiresIn: "1d" }
-      );
+      );      
     },
   },
   User: {
-    __resolveReference(user) {
-      console.log(user);
-      return users.find(function(val){ return user.id == val.id});
+    __resolveReference: async (user, { db }, info) => {
+      //console.log(user);
+
+      const query = {
+        text: 'SELECT id, username FROM users.users WHERE id = $1',
+        values: [user.id],
+      };
+ 
+      const res = await db.query(query);
+      return res.rows[0];
+
+      //return users.find(function(val){ return user.id == val.id});
     },
   },
 };
 
-const server = new ApolloServer({
-  schema: buildFederatedSchema([{ typeDefs, resolvers }]),
-  context: ({ req }) => {
-    const user = req.headers.users ? req.headers.users : null;
-    if(user) console.log(`User Service: ${user}`);
-    return { user };
-  }
-});
+const start = async () => {
+//Connect to db
+  const db = new Pool({
+    user: 'postgres',
+    host: 'db',
+    database: 'postgres',
+    password: 'example'
+  });
 
-server.listen({port: PORT}).then( function({url}) {
-  console.log(`User Service ready at ${url}`);
-});
+  const server = new ApolloServer({
+    schema: buildFederatedSchema([{ typeDefs, resolvers }]),
+    context: ({ req }) => {
+      const user = req.headers.users ? req.headers.users : null;
+      if(user) console.log(`User Service: ${user}`);
+      return { user, db };
+    }
+  });
+
+  server.listen({port: PORT}).then( function({url}) {
+    console.log(`User Service ready at ${url}`);
+  });
+}
+
+start();
