@@ -2,6 +2,7 @@ const { ApolloServer, gql } = require('apollo-server');
 const { buildFederatedSchema } = require('@apollo/federation');
 const jwt = require("jsonwebtoken");
 const { Pool } = require('pg');
+const DataLoader = require('dataloader');
 
 const PORT = 4000;
 /*
@@ -80,21 +81,37 @@ const resolvers = {
     },
   },
   User: {
-    __resolveReference: async (user, { db }, info) => {
+    __resolveReference: async (user, {dataLoader: {usersByIdsLoader} }, info) => {
       //console.log(user);
 
-      const query = {
+      /*const query = {
         text: 'SELECT id, username FROM users.users WHERE id = $1',
         values: [user.id],
       };
  
       const res = await db.query(query);
-      return res.rows[0];
-
+      return res.rows[0];*/
+      //console.log(usersByIdsLoader.load(user.id));
       //return users.find(function(val){ return user.id == val.id});
+
+      return usersByIdsLoader.load(user.id);
     },
   },
 };
+
+//Data Loader
+const dataLoaderFn = (pool) => ({
+  getUsersByIds: async (userIds) => {
+    const query = {
+      text: 'SELECT * FROM users.users WHERE id = ANY($1)',
+      values: [userIds],
+    };
+
+    const res = await pool.query(query);
+
+    return res.rows;
+  }
+});
 
 const start = async () => {
 //Connect to db
@@ -110,7 +127,13 @@ const start = async () => {
     context: ({ req }) => {
       const user = req.headers.users ? req.headers.users : null;
       if(user) console.log(`User Service: ${user}`);
-      return { user, db };
+
+      //data loader
+      const dataLoader = {
+        usersByIdsLoader: new DataLoader(dataLoaderFn(db).getUsersByIds),
+      }
+
+      return { user, db, dataLoader };
     }
   });
 
