@@ -2,6 +2,7 @@ const { ApolloServer } = require('apollo-server-express');
 const { ApolloGateway, RemoteGraphQLDataSource } = require('@apollo/gateway');
 const express = require("express");
 const expressJWT = require("express-jwt");
+//const cors = require('cors');
 
 const start = async () => {
 
@@ -21,7 +22,14 @@ app.use(
     credentialsRequired: false
   })
 );
+/*
+var corsOptions = {
+  origin: process.env.FRONTEND_URL,
+  credentials: true // <-- REQUIRED backend setting
+};
 
+app.use(cors(corsOptions));
+*/
 const gateway = new ApolloGateway({
   serviceList: [
     { name: 'users',   url: 'http://sv_user:4000' },

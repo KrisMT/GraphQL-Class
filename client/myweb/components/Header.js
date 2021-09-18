@@ -14,12 +14,15 @@ const Header = () => {
         </Link>
       </li>
       <li>
+        <Link href="/alluser">
+          <a>All User</a>
+        </Link>
+      </li>
+      <li>
         <Link href="/blog/hello-world">
           <a>No pages Goto 404</a>
         </Link>
       </li>
-
-      
       <li>
         <Link href="/post/basic">
           <a>Basic Dynamic Routes: goto pages/post/[pid].js</a>
@@ -30,6 +33,7 @@ const Header = () => {
           <a>Dynamic Routes with param: goto pages/post/[pid].js</a>
         </Link>
       </li>
+      
     </ul>
   )
 }

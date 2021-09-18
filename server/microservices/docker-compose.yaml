@@ -50,4 +50,12 @@ services:
     environment:
       PGADMIN_DEFAULT_PASSWORD: example
       PGADMIN_DEFAULT_EMAIL: admin@example.com 
+  
+  client:
+    image: krismt/nodemon
+    container_name: 'client'
+    ports:
+      - 3000:3000
+    volumes:
+      - ../../client/myweb:/data
 
