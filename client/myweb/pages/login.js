@@ -14,6 +14,8 @@ const login = () => {
     if(loading) return <div>loading...</div>;
     if(error) return <div>`Error: {error.message}`</div>
 
+    if(data) localStorage.setItem('token', data.login);
+
     return (
         <div>
             <div>Email: {email}</div>

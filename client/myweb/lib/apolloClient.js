@@ -1,16 +1,29 @@
 //import { useMemo } from "react";
 import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
+import { setContext } from '@apollo/client/link/context';
 
 //let apolloClient;
 
 const uri = 'http://localhost:4000/graphql';
 
+const httpLink = new HttpLink({
+    uri: uri,
+});
+
+const authLink = setContext((_, { headers }) => {
+    const token = localStorage.getItem('token');
+    return {
+        headers: {
+            ...headers,
+            authorization: token? `Bearer ${token}`: "",
+        }
+    }
+});
+
 export const createApolloClient = () => {
     return new ApolloClient({
         //ssrMode: typeof window === "undefined",
-        link: new HttpLink({
-            uri: uri,
-        }),
+        link: authLink.concat(httpLink),
         cache: new InMemoryCache(),
     });
 };
