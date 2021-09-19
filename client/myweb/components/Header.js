@@ -14,11 +14,6 @@ const Header = () => {
         </Link>
       </li>
       <li>
-        <Link href="/alluser">
-          <a>All User</a>
-        </Link>
-      </li>
-      <li>
         <Link href="/blog/hello-world">
           <a>No pages Goto 404</a>
         </Link>
@@ -33,7 +28,11 @@ const Header = () => {
           <a>Dynamic Routes with param: goto pages/post/[pid].js</a>
         </Link>
       </li>
-      
+      <li>
+        <Link href="/alluser">
+          <a>Test GraphQL With Query allUser</a>
+        </Link>
+      </li>  
     </ul>
   )
 }

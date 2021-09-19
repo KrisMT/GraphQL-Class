@@ -18,7 +18,7 @@ const AllUser = () => {
 
     const { allUser } = data;
 
-    console.log(allUser);
+    //console.log(allUser);
     
     return (
         <div>

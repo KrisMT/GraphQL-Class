@@ -7,7 +7,7 @@ const uri = 'http://localhost:4000/graphql';
 
 export const createApolloClient = () => {
     return new ApolloClient({
-        ssrMode: typeof window === "undefined",
+        //ssrMode: typeof window === "undefined",
         link: new HttpLink({
             uri: uri,
         }),
