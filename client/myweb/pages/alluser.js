@@ -9,6 +9,12 @@ query allUserQuery {
   }
 `;
 
+const LOGIN_MUTATION = gql`
+mutation loginMutation ($email: String, $password: String) {
+    login(email: $email, password: $password)
+  }
+`;
+
 const AllUser = () => {
 
     const { data, loading, error } = useQuery(ALL_USER_QUERY);

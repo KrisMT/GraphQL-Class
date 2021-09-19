@@ -32,6 +32,11 @@ const Header = () => {
         <Link href="/alluser">
           <a>Test GraphQL With Query allUser</a>
         </Link>
+      </li>
+      <li>
+        <Link href="/login">
+          <a>Test GraphQL With mutation allUser</a>
+        </Link>
       </li>  
     </ul>
   )
